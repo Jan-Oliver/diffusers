@@ -3,4 +3,5 @@ torchvision
 transformers>=4.21.0
 ftfy
 tensorboard
+wandb
 modelcards
