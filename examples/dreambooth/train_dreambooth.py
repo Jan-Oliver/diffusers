@@ -412,7 +412,7 @@ def get_full_repo_name(model_id: str, organization: Optional[str] = None, token:
 
 
 def main(args):
-    run = wandb.init(project=args["wandb_group_name"], group=args["wandb_project_name"], job_type="train")
+    run = wandb.init(project=args.wandb_project_name, group=args.wandb_group_name, job_type="train")
     wandb.config.update(args)
 
     logging_dir = Path(args.output_dir, "0", args.logging_dir)
