@@ -253,7 +253,18 @@ def parse_args(input_args=None):
         default=None,
         help="Path to json containing multiple concepts, will overwrite parameters like instance_prompt, class_prompt, etc.",
     )
-
+    parser.add_argument(
+        "--wandb_group_name",
+        type=str,
+        default=None,
+        help="Group name to combine multiple wandb processes in the GUI."
+    )
+    parser.add_argument(
+        "--wandb_project_name",
+        type=str,
+        default=None,
+        help="Project name to combine multiple wandb processes in the GUI."
+    )
     if input_args is not None:
         args = parser.parse_args(input_args)
     else:
@@ -262,8 +273,6 @@ def parse_args(input_args=None):
     env_local_rank = int(os.environ.get("LOCAL_RANK", -1))
     if env_local_rank != -1 and env_local_rank != args.local_rank:
         args.local_rank = env_local_rank
-    
-    wandb.config.update(args)
     return args
 
 
@@ -403,12 +412,15 @@ def get_full_repo_name(model_id: str, organization: Optional[str] = None, token:
 
 
 def main(args):
+    run = wandb.init(project=args["wandb_group_name"], group=args["wandb_project_name"], job_type="train")
+    wandb.config.update(args)
+
     logging_dir = Path(args.output_dir, "0", args.logging_dir)
 
     accelerator = Accelerator(
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         mixed_precision=args.mixed_precision,
-        log_with="tensorboard",
+        log_with="wandb",
         logging_dir=logging_dir,
     )
 
